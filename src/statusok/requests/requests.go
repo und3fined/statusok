@@ -97,7 +97,7 @@ func RequestsInit(data []RequestConfig, concurrency int) {
 		os.Exit(3)
 	}
 	//send requests to make sure every every request is valid
-	println("\nSending requests to apis.....making sure everything is right before we start monitoring")
+	println("\nSending requests to apis. Making sure everything is right before we start monitoring")
 	println("Api Count: ", len(data))
 
 	for i, requestConfig := range data {

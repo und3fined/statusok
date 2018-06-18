@@ -110,7 +110,7 @@ func AddNew(databaseTypes DatabaseTypes) {
 	//Set first database as primary database
 	if len(dbList) != 0 {
 		dbMain = dbList[0]
-		addTestErrorAndRequestInfo()
+		// addTestErrorAndRequestInfo()
 	} else {
 		fmt.Println("No Database selected.")
 	}

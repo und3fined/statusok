@@ -48,6 +48,11 @@ func main() {
 			Value: "",
 			Usage: "file to save logs",
 		},
+		cli.StringFlag{
+			Name:  "notify",
+			Value: "",
+			Usage: "Send test notification server!",
+		},
 	}
 
 	app.Action = func(c *cli.Context) {
@@ -65,7 +70,7 @@ func main() {
 			println("Config file:", c.String("config"))
 
 			// Start monitoring when a valid file path is given
-			startMonitoring(c.String("config"), c.String("log"))
+			startMonitoring(c.String("config"), c.String("log"), c.String("notify"))
 		} else {
 			println("Config file not present at the given location: ", c.String("config"), "\nPlease give correct file location using --config parameter")
 		}
@@ -76,7 +81,7 @@ func main() {
 	app.Run(os.Args)
 }
 
-func startMonitoring(configFileName string, logFileName string) {
+func startMonitoring(configFileName string, logFileName string, testNotify string) {
 	configFile, err := os.Open(configFileName)
 
 	if err != nil {
@@ -94,7 +99,10 @@ func startMonitoring(configFileName string, logFileName string) {
 	//setup different notification clients
 	notify.AddNew(config.Notifications)
 	//Send test notifications to all the notification clients
-	notify.SendTestNotification()
+
+	if testNotify == "test" {
+		notify.SendTestNotification()
+	}
 
 	//Create unique ids for each request date given in config file
 	reqs, ids := validateAndCreateIdsForRequests(config.Requests)

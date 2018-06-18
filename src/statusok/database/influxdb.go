@@ -34,11 +34,11 @@ func (influxDb InfluxDb) GetDatabaseName() string {
 
 //Intiliaze influx db
 func (influxDb InfluxDb) Initialize() error {
-	println("InfluxDB : Trying to Connect to database ")
+	println("InfluxDB: Trying to Connect to database ")
 
 	u, err := url.Parse(fmt.Sprintf("http://%s:%d", influxDb.Host, influxDb.Port))
 	if err != nil {
-		println("InfluxDB : Invalid Url,Please check domain name given in config file \nError Details: ", err.Error())
+		println("InfluxDB: Invalid Url,Please check domain name given in config file \nError Details: ", err.Error())
 		return err
 	}
 
@@ -72,7 +72,7 @@ func (influxDb InfluxDb) Initialize() error {
 
 	}
 
-	println("InfluxDB: Successfuly connected . Version:", ver)
+	println("InfluxDB: Successfuly connected. Version:", ver)
 
 	return nil
 }
