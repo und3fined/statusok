@@ -8,25 +8,26 @@ import (
 	"strings"
 )
 
-//Diffrent types of clients to deliver notifications
+// NotificationTypes - Diffrent types of clients to deliver notifications
 type NotificationTypes struct {
 	MailNotify MailNotify      `json:"mail"`
 	Mailgun    MailgunNotify   `json:"mailGun"`
 	Slack      SlackNotify     `json:"slack"`
-	Http       HttpNotify      `json:"httpEndPoint"`
-	Dingding   DingdingNotify  `json:"dingding"`
+	HTTP       HttpNotify      `json:"httpEndPoint"`
 	Pagerduty  PagerdutyNotify `json:"pagerduty"`
 }
 
+// ResponseTimeNotification struct
 type ResponseTimeNotification struct {
-	Url                  string
+	URL                  string
 	RequestType          string
 	ExpectedResponsetime int64
 	MeanResponseTime     int64
 }
 
+// ErrorNotification struct
 type ErrorNotification struct {
-	Url          string
+	URL          string
 	RequestType  string
 	ResponseBody string
 	Error        string
@@ -38,6 +39,7 @@ var (
 	notificationsList []Notify
 )
 
+// Notify interface
 type Notify interface {
 	GetClientName() string
 	Initialize() error
@@ -45,7 +47,7 @@ type Notify interface {
 	SendErrorNotification(notification ErrorNotification) error
 }
 
-//Add notification clients given by user in config file to notificationsList
+// AddNew - Add notification clients given by user in config file to notificationsList
 func AddNew(notificationTypes NotificationTypes) {
 
 	v := reflect.ValueOf(notificationTypes)
@@ -61,7 +63,7 @@ func AddNew(notificationTypes NotificationTypes) {
 	if len(notificationsList) == 0 {
 		println("No clients Registered for Notifications")
 	} else {
-		println("Initializing Notification Clients....")
+		println("Initializing Notification Clients...")
 	}
 
 	for _, value := range notificationsList {
@@ -71,13 +73,13 @@ func AddNew(notificationTypes NotificationTypes) {
 			println("Notifications: Failed to Initialize ", value.GetClientName(), ".Please check the details in config file ")
 			println("Error Details:", initErr.Error())
 		} else {
-			println("Notifications:", value.GetClientName(), " Intialized")
+			println("Notifications:", value.GetClientName(), "Intialized")
 		}
 
 	}
 }
 
-//Send response time notification to all clients registered
+// SendResponseTimeNotification - Send response time notification to all clients registered
 func SendResponseTimeNotification(responseTimeNotification ResponseTimeNotification) {
 
 	for _, value := range notificationsList {
@@ -90,7 +92,7 @@ func SendResponseTimeNotification(responseTimeNotification ResponseTimeNotificat
 	}
 }
 
-//Send Error notification to all clients registered
+// SendErrorNotification - Send Error notification to all clients registered
 func SendErrorNotification(errorNotification ErrorNotification) {
 
 	for _, value := range notificationsList {
@@ -103,30 +105,28 @@ func SendErrorNotification(errorNotification ErrorNotification) {
 	}
 }
 
-//Send Test notification to all registered clients .To make sure everything is working
+// SendTestNotification - Send Test notification to all registered clients .To make sure everything is working
 func SendTestNotification() {
-
-	println("Sending Test notifications to the registered clients")
-
+	println("Test notifications to the registered clients")
 	for _, value := range notificationsList {
 		err := value.SendResponseTimeNotification(ResponseTimeNotification{"http://example.com", "GET", 700, 800})
 
 		if err != nil {
-			println("Failed to Send Response Time notification to ", value.GetClientName(), " Please check the details entered in the config file")
-			println("Error Details :", err.Error())
+			fmt.Printf("Failed to Send Response Time notification to %s. Please check the details entered in the config file\r\n", value.GetClientName())
+			println("Error Details:", err.Error())
 			os.Exit(3)
 		} else {
-			println("Sent Test Response Time notification to ", value.GetClientName(), ". Make sure you received it")
+			fmt.Printf("Sent Test Response Time notification to %s. Make sure you received it.\r\n", value.GetClientName())
 		}
 
-		err1 := value.SendErrorNotification(ErrorNotification{"http://example.com", "GET", "This is test notification", "Test notification", "test"})
+		err1 := value.SendErrorNotification(ErrorNotification{"http://example.com", "GET", ". This is test notification", "Test notification", "test"})
 
 		if err1 != nil {
-			println("Failed to Send Error notification to ", value.GetClientName(), " Please check the details entered in the config file")
+			fmt.Printf("Failed to Send Error notification to %s. Please check the details entered in the config file\r\n", value.GetClientName())
 			println("Error Details :", err1.Error())
 			os.Exit(3)
 		} else {
-			println("Sent Test Error notification to ", value.GetClientName(), ". Make sure you received it")
+			fmt.Printf("Sent Test Error notification to %s. Make sure you received it.\r\n", value.GetClientName())
 		}
 	}
 }
@@ -155,7 +155,7 @@ func getMessageFromResponseTimeNotification(responseTimeNotification ResponseTim
 	message := fmt.Sprintf("Notification From StatusOk\n\nOne of your apis response time is below than expected."+
 		"\n\nPlease find the Details below"+
 		"\n\nUrl: %v \nRequestType: %v \nCurrent Average Response Time: %v ms\nExpected Response Time: %v ms\n"+
-		"\n\nThanks", responseTimeNotification.Url, responseTimeNotification.RequestType, responseTimeNotification.MeanResponseTime, responseTimeNotification.ExpectedResponsetime)
+		"\n\nThanks", responseTimeNotification.URL, responseTimeNotification.RequestType, responseTimeNotification.MeanResponseTime, responseTimeNotification.ExpectedResponsetime)
 
 	return message
 }
@@ -166,7 +166,7 @@ func getMessageFromErrorNotification(errorNotification ErrorNotification) string
 	message := fmt.Sprintf("Notification From StatusOk\n\nWe are getting error when we try to send request to one of your apis"+
 		"\n\nPlease find the Details below"+
 		"\n\nUrl: %v \nRequestType: %v \nError Message: %v \nResponse Body: %v\nOther Info:%v\n"+
-		"\n\nThanks", errorNotification.Url, errorNotification.RequestType, errorNotification.Error, errorNotification.ResponseBody, errorNotification.OtherInfo)
+		"\n\nThanks", errorNotification.URL, errorNotification.RequestType, errorNotification.Error, errorNotification.ResponseBody, errorNotification.OtherInfo)
 
 	return message
 }

@@ -44,7 +44,7 @@ func (pagerdutyNotify PagerdutyNotify) SendResponseTimeNotification(responseTime
 
 	msgParam := MessageParam{getMessageFromResponseTimeNotification(responseTimeNotification)}
 
-	requestBody := CreatePagerdutyRequest(responseTimeNotification.Url, msgParam.Message, pagerdutyNotify)
+	requestBody := CreatePagerdutyRequest(responseTimeNotification.URL, msgParam.Message, pagerdutyNotify)
 
 	jsonBody, jsonErr := getJsonParamsBody(requestBody)
 	if jsonErr != nil {
@@ -80,7 +80,7 @@ func (pagerdutyNotify PagerdutyNotify) SendErrorNotification(errorNotification E
 
 	msgParam := MessageParam{getMessageFromErrorNotification(errorNotification)}
 
-	requestBody := CreatePagerdutyRequest(errorNotification.Url, msgParam.Message, pagerdutyNotify)
+	requestBody := CreatePagerdutyRequest(errorNotification.URL, msgParam.Message, pagerdutyNotify)
 
 	jsonBody, jsonErr := getJsonParamsBody(requestBody)
 	if jsonErr != nil {

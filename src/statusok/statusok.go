@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/codegangsta/cli"
 	"io"
 	"math/rand"
 	"net/http"
@@ -11,6 +10,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/codegangsta/cli"
 	"statusok/database"
 	"statusok/notify"
 	"statusok/requests"
@@ -34,8 +34,8 @@ func main() {
 
 	//Cli tool setup to get config file path from parameters
 	app := cli.NewApp()
-	app.Name = "StatusOk"
-	app.Usage = "Monitor your website.Get notifications when its down"
+	app.Name = "Status OK"
+	app.Usage = "Monitor your website. Get notifications when its down."
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
@@ -51,7 +51,6 @@ func main() {
 	}
 
 	app.Action = func(c *cli.Context) {
-
 		if fileExists(c.String("config")) {
 
 			if len(c.String("log")) != 0 {
@@ -63,9 +62,9 @@ func main() {
 				}
 			}
 
-			println("Reading File :", c.String("config"))
+			println("Config file:", c.String("config"))
 
-			//Start monitoring when a valid file path is given
+			// Start monitoring when a valid file path is given
 			startMonitoring(c.String("config"), c.String("log"))
 		} else {
 			println("Config file not present at the given location: ", c.String("config"), "\nPlease give correct file location using --config parameter")
@@ -78,7 +77,6 @@ func main() {
 }
 
 func startMonitoring(configFileName string, logFileName string) {
-
 	configFile, err := os.Open(configFileName)
 
 	if err != nil {
@@ -96,7 +94,7 @@ func startMonitoring(configFileName string, logFileName string) {
 	//setup different notification clients
 	notify.AddNew(config.Notifications)
 	//Send test notifications to all the notification clients
-	// notify.SendTestNotification()
+	notify.SendTestNotification()
 
 	//Create unique ids for each request date given in config file
 	reqs, ids := validateAndCreateIdsForRequests(config.Requests)

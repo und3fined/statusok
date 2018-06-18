@@ -1,8 +1,8 @@
 package notify
 
-//Inspired from https://github.com/zbindenren/logrus_mail
 import (
 	"bytes"
+	"fmt"
 	"net"
 	"net/mail"
 	"net/smtp"
@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+// MailNotify struct
 type MailNotify struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -24,24 +25,22 @@ var (
 	client       *smtp.Client
 )
 
+// GetClientName func
 func (mailNotify MailNotify) GetClientName() string {
-	return "Smtp Mail"
+	return "SMTP Mail"
 }
 
+// Initialize func
 func (mailNotify MailNotify) Initialize() error {
-
 	// Check if server listens on that port.
 	if len(mailNotify.Username) == 0 && len(mailNotify.Password) == 0 {
 		isAuthorized = false
-
 		conn, err := smtp.Dial(mailNotify.Host + ":" + strconv.Itoa(mailNotify.Port))
-
 		if err != nil {
 			return err
 		}
 
 		client = conn
-
 	} else {
 		isAuthorized = true
 		conn, err := net.DialTimeout("tcp", mailNotify.Host+":"+strconv.Itoa(mailNotify.Port), 3*time.Second)
@@ -66,12 +65,15 @@ func (mailNotify MailNotify) Initialize() error {
 	return nil
 }
 
+// SendResponseTimeNotification func
 func (mailNotify MailNotify) SendResponseTimeNotification(responseTimeNotification ResponseTimeNotification) error {
 	if isAuthorized {
-
 		auth := smtp.PlainAuth("", mailNotify.Username, mailNotify.Password, mailNotify.Host)
-
 		message := getMessageFromResponseTimeNotification(responseTimeNotification)
+
+		message = fmt.Sprintf("To: %s\r\n"+
+			"Subject: Status OK - %s\r\n%s",
+			mailNotify.To, responseTimeNotification.URL, message)
 
 		// Connect to the server, authenticate, set the sender and recipient,
 		// and send the email all in one step.
@@ -106,12 +108,15 @@ func (mailNotify MailNotify) SendResponseTimeNotification(responseTimeNotificati
 	}
 }
 
+// SendErrorNotification func
 func (mailNotify MailNotify) SendErrorNotification(errorNotification ErrorNotification) error {
 	if isAuthorized {
-
 		auth := smtp.PlainAuth("", mailNotify.Username, mailNotify.Password, mailNotify.Host)
-
 		message := getMessageFromErrorNotification(errorNotification)
+
+		message = fmt.Sprintf("To: %s\r\n"+
+			"Subject: WARNING %s - %s\r\n%s",
+			mailNotify.To, errorNotification.URL, errorNotification.Error, message)
 
 		// Connect to the server, authenticate, set the sender and recipient,
 		// and send the email all in one step.
