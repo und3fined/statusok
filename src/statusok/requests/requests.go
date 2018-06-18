@@ -101,7 +101,7 @@ func RequestsInit(data []RequestConfig, concurrency int) {
 	println("Api Count: ", len(data))
 
 	for i, requestConfig := range data {
-		println("Request #", i, " : ", requestConfig.RequestType, " ", requestConfig.Url)
+		println("Request#", i, ": ", requestConfig.RequestType, " ", requestConfig.Url)
 
 		//Perform request
 		reqErr := PerformRequest(requestConfig, nil)
@@ -163,7 +163,7 @@ func listenToRequestChannel() {
 
 }
 
-//takes the date from requestConfig and creates http request and executes it
+// PerformRequest takes the date from requestConfig and creates http request and executes it
 func PerformRequest(requestConfig RequestConfig, throttle chan int) error {
 	//Remove value from throttel channel when request is completed
 	defer func() {
