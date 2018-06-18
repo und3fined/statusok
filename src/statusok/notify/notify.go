@@ -68,10 +68,10 @@ func AddNew(notificationTypes NotificationTypes) {
 		initErr := value.Initialize()
 
 		if initErr != nil {
-			println("Notifications : Failed to Initialize ", value.GetClientName(), ".Please check the details in config file ")
-			println("Error Details :", initErr.Error())
+			println("Notifications: Failed to Initialize ", value.GetClientName(), ".Please check the details in config file ")
+			println("Error Details:", initErr.Error())
 		} else {
-			println("Notifications :", value.GetClientName(), " Intialized")
+			println("Notifications:", value.GetClientName(), " Intialized")
 		}
 
 	}
@@ -109,7 +109,7 @@ func SendTestNotification() {
 	println("Sending Test notifications to the registered clients")
 
 	for _, value := range notificationsList {
-		err := value.SendResponseTimeNotification(ResponseTimeNotification{"http://test.com", "GET", 700, 800})
+		err := value.SendResponseTimeNotification(ResponseTimeNotification{"http://example.com", "GET", 700, 800})
 
 		if err != nil {
 			println("Failed to Send Response Time notification to ", value.GetClientName(), " Please check the details entered in the config file")
@@ -119,7 +119,7 @@ func SendTestNotification() {
 			println("Sent Test Response Time notification to ", value.GetClientName(), ". Make sure you received it")
 		}
 
-		err1 := value.SendErrorNotification(ErrorNotification{"http://test.com", "GET", "This is test notification", "Test notification", "test"})
+		err1 := value.SendErrorNotification(ErrorNotification{"http://example.com", "GET", "This is test notification", "Test notification", "test"})
 
 		if err1 != nil {
 			println("Failed to Send Error notification to ", value.GetClientName(), " Please check the details entered in the config file")

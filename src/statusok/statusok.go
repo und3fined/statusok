@@ -4,15 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/codegangsta/cli"
-	"github.com/sanathp/statusok/database"
-	"github.com/sanathp/statusok/notify"
-	"github.com/sanathp/statusok/requests"
 	"io"
 	"math/rand"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
+
+	"./database"
+	"./notify"
+	"./requests"
 )
 
 type configParser struct {

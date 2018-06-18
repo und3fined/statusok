@@ -1,0 +1,5 @@
+{
+    "go.gopath": "${workspaceFolder}",
+    "go.formatTool": "goformat",
+    "go.inferGopath": true
+}
