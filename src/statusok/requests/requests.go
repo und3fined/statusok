@@ -5,13 +5,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/sanathp/statusok/database"
 	"io"
 	"net/http"
 	"net/url"
 	"os"
 	"strconv"
 	"time"
+
+	"statusok/database"
 )
 
 var (
@@ -98,7 +99,7 @@ func RequestsInit(data []RequestConfig, concurrency int) {
 	}
 	//send requests to make sure every every request is valid
 	println("\nSending requests to apis. Making sure everything is right before we start monitoring")
-	println("Api Count: ", len(data))
+	println("Api Count:", len(data))
 
 	for i, requestConfig := range data {
 		println("Request#", i, ": ", requestConfig.RequestType, " ", requestConfig.Url)
@@ -121,9 +122,9 @@ func RequestsInit(data []RequestConfig, concurrency int) {
 	println("All requests Successfull")
 }
 
-//Start monitoring by calling createTicker method for each request
+// StartMonitoring - Start monitoring by calling createTicker method for each request
 func StartMonitoring() {
-	fmt.Println("\nStarted Monitoring all ", len(RequestsList), " apis .....")
+	fmt.Println("\nStarted Monitoring all", len(RequestsList), "apis .....")
 
 	go listenToRequestChannel()
 
@@ -187,7 +188,7 @@ func PerformRequest(requestConfig RequestConfig, throttle chan int) error {
 
 			jsonBody, jsonErr := GetJsonParamsBody(requestConfig.FormParams)
 			if jsonErr != nil {
-				//Not able to create Request object.Add Error to Database
+				// Not able to create Request object.Add Error to Database
 				go database.AddErrorInfo(database.ErrorInfo{
 					Id:           requestConfig.Id,
 					Url:          requestConfig.Url,
@@ -200,6 +201,7 @@ func PerformRequest(requestConfig RequestConfig, throttle chan int) error {
 
 				return jsonErr
 			}
+
 			request, reqErr = http.NewRequest(requestConfig.RequestType,
 				requestConfig.Url,
 				jsonBody)
@@ -297,8 +299,8 @@ func PerformRequest(requestConfig RequestConfig, throttle chan int) error {
 	}
 
 	elapsed := time.Since(start)
-
-	//Request succesfull . Add infomartion to Database
+	
+	// Request succesfull . Add infomartion to Database
 	go database.AddRequestInfo(database.RequestInfo{
 		Id:                   requestConfig.Id,
 		Url:                  requestConfig.Url,

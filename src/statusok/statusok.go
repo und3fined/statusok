@@ -9,8 +9,9 @@ import (
 	"os"
 	"strconv"
 	"time"
+	"log"
 
-	"github.com/codegangsta/cli"
+	"github.com/urfave/cli"
 	"statusok/database"
 	"statusok/notify"
 	"statusok/requests"
@@ -25,6 +26,7 @@ type configParser struct {
 	Port          int                      `json:"port"`
 }
 
+// NotifyWhen struct
 type NotifyWhen struct {
 	MeanResponseCount int `json:"meanResponseCount"`
 	ErrorCount        int `json:"errorCount"`
@@ -55,9 +57,8 @@ func main() {
 		},
 	}
 
-	app.Action = func(c *cli.Context) {
+	app.Action = func(c *cli.Context) error {
 		if fileExists(c.String("config")) {
-
 			if len(c.String("log")) != 0 {
 				//log parameter given.Check if file can be created at given path
 
@@ -72,13 +73,17 @@ func main() {
 			// Start monitoring when a valid file path is given
 			startMonitoring(c.String("config"), c.String("log"), c.String("notify"))
 		} else {
-			println("Config file not present at the given location: ", c.String("config"), "\nPlease give correct file location using --config parameter")
+			println("Config file not present at the given location:", c.String("config"), "\nPlease give correct file location using --config parameter")
 		}
 
+		return nil;
 	}
 
 	//Run as cli app
-	app.Run(os.Args)
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func startMonitoring(configFileName string, logFileName string, testNotify string) {
@@ -99,7 +104,7 @@ func startMonitoring(configFileName string, logFileName string, testNotify strin
 	//setup different notification clients
 	notify.AddNew(config.Notifications)
 	//Send test notifications to all the notification clients
-	notify.SendTestNotification()
+	// notify.SendTestNotification()
 
 	//Create unique ids for each request date given in config file
 	reqs, ids := validateAndCreateIdsForRequests(config.Requests)
@@ -119,17 +124,19 @@ func startMonitoring(configFileName string, logFileName string, testNotify strin
 
 	if config.Port == 0 {
 		//Default port
-		http.ListenAndServe(":7321", nil)
+		err := http.ListenAndServe(":7321", nil)
+		log.Fatal(err)
 	} else {
 		//if port is mentioned in config file
-		http.ListenAndServe(":"+strconv.Itoa(config.Port), nil)
+		err := http.ListenAndServe(":"+strconv.Itoa(config.Port), nil)
+		log.Fatal(err)
 	}
 }
 
 //Currently just tells status ok is running
 //Planning to display useful information in future
 func statusHandler(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "StatusOk is running \n Planning to display useful information in further releases")
+	io.WriteString(w, "StatusOk is running \nPlanning to display useful information in further releases")
 }
 
 //Tells whether a file exits or not

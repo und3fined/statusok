@@ -8,12 +8,12 @@ import (
 	"strings"
 
 	"github.com/Sirupsen/logrus"
-	"github.com/sanathp/statusok/notify"
+	"statusok/notify"
 )
 
 var (
-	MeanResponseCount = 5 //Default number of response times to calcuate mean response time
-	ErrorCount        = 1 //Default number of errors should occur to send notification
+	MeanResponseCount = 5 // Default number of response times to calcuate mean response time
+	ErrorCount        = 1 // Default number of errors should occur to send notification
 
 	dbList       []Database      //list of databases registered
 	responseMean map[int][]int64 //A map of queues to calculate mean response time
@@ -77,7 +77,7 @@ func Initialize(ids map[int]int64, mMeanResponseCount int, mErrorCount int) {
 
 }
 
-//Add database to the database List
+// Add database to the database List
 func AddNew(databaseTypes DatabaseTypes) {
 
 	v := reflect.ValueOf(databaseTypes)
@@ -110,7 +110,7 @@ func AddNew(databaseTypes DatabaseTypes) {
 	//Set first database as primary database
 	if len(dbList) != 0 {
 		dbMain = dbList[0]
-		addTestErrorAndRequestInfo()
+		// addTestErrorAndRequestInfo()
 	} else {
 		fmt.Println("No Database selected.")
 	}
@@ -140,7 +140,7 @@ func addTestErrorAndRequestInfo() {
 	}
 }
 
-//This function is called by requests package when request has been successfully performed
+// AddRequestInfo This function is called by requests package when request has been successfully performed
 //Request data is inserted to all the registered databases
 func AddRequestInfo(requestInfo RequestInfo) {
 	logRequestInfo(requestInfo)
@@ -154,7 +154,7 @@ func AddRequestInfo(requestInfo RequestInfo) {
 	addResponseTimeToRequest(requestInfo.Id, requestInfo.ResponseTime)
 
 	//calculate current mean response time . if its less than expected send notitifcation
-	mean, meanErr := getMeanResponseTimeOfUrl(requestInfo.Id)
+	mean, meanErr := getMeanResponseTimeOfURL(requestInfo.Id)
 
 	if meanErr == nil {
 		if mean > requestInfo.ExpectedResponseTime {
@@ -167,10 +167,9 @@ func AddRequestInfo(requestInfo RequestInfo) {
 				mean})
 		}
 	}
-
 }
 
-//This function is called by requests package when a reuquest fails
+// AddErrorInfo This function is called by requests package when a reuquest fails
 //Error Information is inserted to all the registered databases
 func AddErrorInfo(errorInfo ErrorInfo) {
 	logErrorInfo(errorInfo)
@@ -206,7 +205,7 @@ func addResponseTimeToRequest(id int, responseTime int64) {
 }
 
 //Calculate current  mean response time for the given request id
-func getMeanResponseTimeOfUrl(id int) (int64, error) {
+func getMeanResponseTimeOfURL(id int) (int64, error) {
 
 	queue := responseMean[id]
 
@@ -228,7 +227,6 @@ func clearQueue(id int) {
 }
 
 func isEmptyObject(objectString string) bool {
-
 	objectString = strings.Replace(objectString, "0", "", -1)
 	objectString = strings.Replace(objectString, "map", "", -1)
 	objectString = strings.Replace(objectString, "[]", "", -1)
@@ -236,13 +234,13 @@ func isEmptyObject(objectString string) bool {
 
 	if len(objectString) > 2 {
 		return false
-	} else {
-		return true
 	}
+
+	return true
 }
 
+// EnableLogging func
 func EnableLogging(fileName string) {
-
 	isLoggingEnabled = true
 
 	// Log as JSON instead of the default ASCII formatter.
@@ -281,7 +279,6 @@ func logErrorInfo(errorInfo ErrorInfo) {
 }
 
 func logRequestInfo(requestInfo RequestInfo) {
-
 	if isLoggingEnabled {
 		logrus.WithFields(logrus.Fields{
 			"id":                   requestInfo.Id,
